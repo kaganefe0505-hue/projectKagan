@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProjectKagan | Mission Control</title>
+    <style>
+        :root {
+            --bg-color: #060a13;
+            --panel-color: #0f1626;
+            --neon-blue: #00ffe5;
+            --neon-green: #39ff14;
+            --neon-red: #ff2a5f;
+            --text-color: #e2e8f0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(15, 22, 38, 0.4) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(15, 22, 38, 0.4) 1px, transparent 1px);
+            background-size: 30px 30px;
+            z-index: -1;
+        }
+
+        header {
+            border-bottom: 2px solid var(--neon-blue);
+            padding: 25px 20px;
+            text-align: center;
+            background: rgba(15, 22, 38, 0.85);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.25);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.4rem;
+            letter-spacing: 5px;
+            color: var(--neon-blue);
+            text-shadow: 0 0 12px var(--neon-blue);
+        }
+
+        .subtitle {
+            color: var(--neon-green);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-top: 8px;
+        }
+
+        /* Sekme (Tab) Butonları Konteyneri */
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 30px auto 10px auto;
+            max-width: 1100px;
+            padding: 0 20px;
+        }
+
+        .tab-btn {
+            background: var(--panel-color);
+            color: var(--text-color);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            padding: 12px 24px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            flex: 1;
+            max-width: 250px;
+            text-align: center;
+        }
+
+        .tab-btn:hover {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+        }
+
+        /* Aktif Sekme Stili */
+        .tab-btn.active {
+            background: var(--neon-blue);
+            color: var(--bg-color);
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 15px var(--neon-blue);
+        }
+
+        /* İçerik Alanları */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto 40px auto;
+            padding: 20px;
+        }
+
+        .tab-content {
+            display: none; /* Varsayılan olarak gizli */
+            background: rgba(15, 22, 38, 0.8);
+            border: 1px solid rgba(0, 243, 255, 0.1);
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .tab-content.active {
+            display: block; /* Sadece aktif olan görünecek */
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            color: #fff;
+            border-left: 4px solid var(--neon-green);
+            padding-left: 12px;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 0;
+        }
+
+        .about-box {
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+
+        /* Uzun Video Satır Stili */
+        .video-row {
+            background: var(--bg-color);
+            border: 1px solid rgba(0, 243, 255, 0.05);
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .video-row:hover {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
+        }
+
+        .video-title {
+            margin: 0;
+            font-size: 1.15rem;
+            color: #fff;
+            line-height: 1.4;
+        }
+
+        .btn-long {
+            padding: 10px 20px;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            background: transparent;
+            color: var(--neon-blue);
+            border: 1px solid var(--neon-blue);
+        }
+
+        .btn-long:hover {
+            background: var(--neon-blue);
+            color: var(--bg-color);
+            box-shadow: 0 0 12px var(--neon-blue);
+        }
+
+        /* Shorts Grid Yapısı */
+        .shorts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .shorts-card {
+            background: var(--bg-color);
+            border: 1px solid rgba(255, 42, 95, 0.15);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .shorts-card:hover {
+            border-color: var(--neon-red);
+            box-shadow: 0 0 15px rgba(255, 42, 95, 0.25);
+            transform: translateY(-3px);
+        }
+
+        .shorts-card-title {
+            font-size: 0.95rem;
+            color: #fff;
+            margin: 0 0 15px 0;
+            min-height: 54px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.4;
+            font-weight: 600;
+        }
+
+        .btn-shorts {
+            padding: 10px 18px;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            background: transparent;
+            color: var(--neon-red);
+            border: 1px solid var(--neon-red);
+            width: 100%;
+            box-sizing: border-box;
+            justify-content: center;
+        }
+
+        .btn-shorts:hover {
+            background: var(--neon-red);
+            color: #fff;
+            box-shadow: 0 0 12px var(--neon-red);
+        }
+
+        @media (max-width: 768px) {
+            .tab-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .tab-btn {
+                width: 100%;
+                max-width: none;
+            }
+            .video-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .btn-long {
+                width: 100%;
+                text-align: center;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>PROJECT KAGAN</h1>
+        <div class="subtitle">// SİBERNETİK LABORATUVARI KONTROL PANELİ</div>
+    </header>
+
+    <div class="tab-container">
+        <button class="tab-btn active" onclick="openTab('about')">🪐 KANAL NE HAKKINDA?</button>
+        <button class="tab-btn" onclick="openTab('long-videos')">🎬 UZUN VİDEOLAR</button>
+        <button class="tab-btn" onclick="openTab('shorts-videos')">📱 SHORTS VİDEOLARI</button>
+    </div>
+
+    <div class="container">
+        
+        <div id="about" class="tab-content active">
+            <h2 class="section-title">SİSTEM ORYANTASYONU</h2>
+            <div class="about-box">
+                <h3 style="color: var(--neon-blue); margin-top:0;">PROJECT KAGAN // MISSION CONTROL ONLINE</h3>
+                <p><strong>ProjectKagan</strong>, sıradan elektronik projeleri paylaşan bir kanal değildir. Burası; geleceğin teknolojilerini bugünün donanımlarıyla geliştirmeyi hedefleyen, deneysel bir mühendislik laboratuvarıdır.</p>
+                <p>Laboratuvarda geliştirilen her sistem gerçek donanımlar kullanılarak tasarlanır, test edilir ve çalışır hâle getirilir. Arduino, ESP32, Home Assistant, Raspberry Pi, yapay zekâ ve robotik teknolojileri kullanılarak siberpunk temalı akıllı sistemler, otomasyon projeleri ve geleceğin yaşam teknolojileri inşa edilmektedir.</p>
+                <hr style="border:1px solid rgba(0,243,255,.15); margin:30px 0;">
+                <h3 style="color:var(--neon-green);">LABORATUVAR VERİ TABANI</h3>
+                <p>🛰️ Uzay görev kontrol merkezi projeleri</p>
+                <p>🤖 İnsansı ve dört ayaklı robot geliştirme çalışmaları</p>
+                <p>🏠 ESP32 ve Home Assistant tabanlı akıllı ev sistemleri</p>
+                <p>🌱 Akıllı sera, teraryum và biyosfer otomasyonları</p>
+                <p>🚗 Arduino ile araç teknolojileri ve akıllı otomasyonlar</p>
+                <p>💡 Yapay zekâ destekli elektronik sistemler</p>
+                <p>🔬 Bilimsel deneyler ve ileri seviye mühendislik projeleri</p>
+                <p>⚙️ Arduino ve ESP32 eğitimleri, devre tasarımları ve uygulamalı içerikler</p>
+                <hr style="border:1px solid rgba(0,243,255,.15); margin:30px 0;">
+                <h3 style="color:var(--neon-green);">MİSYON</h3>
+                <p>Teknolojiyi sadece kullanmak değil, onu tasarlamak ve geliştirmek. Her proje fikir aşamasından çalışan prototipe kadar tüm geliştirme sürecini içerir. Amaç, yalnızca çalışan cihazlar üretmek değil; izleyicilere gerçek mühendislik yaklaşımını, problem çözme sürecini ve yeni teknolojileri anlaşılır şekilde aktarmaktır.</p>
+                <hr style="border:1px solid rgba(0,243,255,.15); margin:30px 0;">
+                <h3 style="color:var(--neon-green);">NAVİGASYON</h3>
+                <p>📁 <strong>Uzun Videolar</strong><br>Ayrıntılı proje geliştirme süreçleri, devre tasarımları ve teknik anlatımlar.</p>
+                <p>⚡ <strong>Shorts</strong><br>Hızlı elektronik bilgileri, kısa eğitimler, ipuçları ve mini projeler.</p>
+                <hr style="border:1px solid rgba(0,243,255,.15); margin:30px 0;">
+                <div style="text-align:center; font-size:1.3rem; color:var(--neon-blue); font-weight:bold; text-shadow:0 0 10px var(--neon-blue); letter-spacing:2px;">
+                    "GELECEK SATIN ALINMAZ.<br>GELECEK İNŞA EDİLİR."
+                </div>
+            </div>
+        </div>
+
+        <div id="long-videos" class="tab-content">
+            <h2 class="section-title">PROJE ANALİZ RAPORLARI (UZUN VERİ AKIŞI)</h2>
+               
+           <div class="video-row">
+    <h3 class="video-title">Einstein'a Karşı Warp Sürücüsü: Uzay-Zamanı Nasıl Bükeriz?</h3>
+    <a href="https://youtu.be/6JpN87d8gn0" target="_blank" class="btn-long">🎬 İZLE</a>
+</div>
+<div class="video-row">
+    <h3 class="video-title">Bir Damla Antimadde Okyanusa Düşerse Ne Olur? (Bilimsel Analiz)</h3>
+    <a href="https://youtu.be/vRlHtiguaXk" target="_blank" class="btn-long">🎬 İZLE</a>
+</div>
+<div class="video-row">
+    <h3 class="video-title">Astrion Mirror: Kendi Yapay Zekâlı Akıllı Aynamı İnşa Ettim! (Pi 5 + ESP32)</h3>
+    <a href="https://youtu.be/3T8uNHKy6Zk" target="_blank" class="btn-long">🎬 İZLE</a>
+</div>
+<div class="video-row">
+    <h3 class="video-title">Akıllı Evleri Çöpe Atın: ASTRION Yapay Zeka İşletim Sistemi (Whitepaper v2.0)</h3>
+    <a href="https://youtu.be/8iBziKnBft0" target="_blank" class="btn-long">🎬 İZLE</a>
+</div>
+            <div class="video-row">
+                <h3 class="video-title">Odama Tamamen Çalışan Uzay Görev Kontrol Merkezi Kurdum! (ESP32 & Home Assistant)</h3>
+                <a href="https://youtu.be/g8KG9A9THa0?si=jIqHdwLfgX3BDKv5" target="_blank" class="btn-long">🎬 İZLE</a>
+            </div>
+            <div class="video-row">
+                <h3 class="video-title">Gerçek Hayatta GERÇEK DEMİR ADAM MASASI Yapmak! 🛠️ (JARVIS Entegreli)</h3>
+                <a href="https://youtu.be/V-N0ehOEy4U?si=MBk22RmZbRJTdlY0" target="_blank" class="btn-long">🎬 İZLE</a>
+            </div>
+            <div class="video-row">
+                <h3 class="video-title">Mars'ta Hayat Kurtaran Teknoloji: ESP32 ile Otonom Biyosfer Simülatörü (ARES-1)</h3>
+                <a href="https://youtu.be/XakXvl2Yz_o?si=97CgZpd6BeqvfXjN" target="_blank" class="btn-long">🎬 İZLE</a>
+            </div>
+            <div class="video-row">
+                <h3 class="video-title">Telefonla Arayan Siberpunk Akıllı Teraryum Yaptım! 🚨 (NATURE-GUARD v1)</h3>
+                <a href="https://youtu.be/rLZb0jJ5yJs?si=tPl1Z5erGKUCAqNX" target="_blank" class="btn-long">🎬 İZLE</a>
+            </div>
+            <div class="video-row">
+                <h3 class="video-title">ESP32 ile Akıllı Ders Masası Yaptım | StudyDock X 🔥</h3>
+                <a href="https://youtu.be/2-XifERKAAo?si=Ili4bZ_hQogCckUj" target="_blank" class="btn-long">🎬 İZLE</a>
+            </div>
+            <div class="video-row">
+                <h3 class="video-title">Geleceğin İnsansı Robotu: Q-01 Hibrit Robot Teknolojisi ve Özellikleri</h3>
+                <a href="https://youtu.be/pejT7ucnBi0?si=AfcXk3BjehMPnv5r" target="_blank" class="btn-long">🎬 İZLE</a>
+            </div>
+            <div class="video-row">
+                <h3 class="video-title">Sıfırdan ESP32 ile Akıllı Sera Sistemi Yapımı! (Otonom Otomasyon)</h3>
+                <a href="https://youtu.be/sSbKPspFWdQ?si=Ja1d-ZjvejIcNT3w" target="_blank" class="btn-long">🎬 İZLE</a>
+            </div>
+            <div class="video-row">
+                <h3 class="video-title">Eski Bulaşık Makinesini ESP32 ile Akıllandırdım! (Telefona Bildirim)</h3>
+                <a href="https://youtu.be/KGqod6YqIIM?si=I0k-1fTaodJ5e3fO" target="_blank" class="btn-long">🎬 İZLE</a>
+            </div>
+            <div class="video-row">
+                <h3 class="video-title">Odamı Siberpunk Üssüne Çevirdim! 🔐 RFID ve Bluetooth Akıllı Kilit</h3>
+                <a href="https://youtu.be/mDM67gO0o7w?si=iwzot8pTTMIUKQON" target="_blank" class="btn-long">🎬 İZLE</a>
+            </div>
+            <div class="video-row">
+                <h3 class="video-title">KOD YAZMADAN Telefon Kontrollü Araba Yapımı! 🚗📱 (RemoteXY)</h3>
+                <a href="https://youtu.be/IRBObfeFSk4?si=HQBr7VFKIUgjN1HR" target="_blank" class="btn-long">🎬 İZLE</a>
+            </div>
+            <div class="video-row">
+                <h3 class="video-title">🚗 Eski Arabaya Arduino Takarsan Ne Olur? (8 Akıllı Sistem Birden!)</h3>
+                <a href="https://youtu.be/sd-cUWeMT2E?si=HvZ_CqCjPj5ZuHkJ" target="_blank" class="btn-long">🎬 İZLE</a>
+            </div>
+            <div class="video-row">
+                <h3 class="video-title">Arduino İle Kontrollü Kondansatör Patlatmak! 💥</h3>
+                <a href="https://youtu.be/owqTV1ZGNeE?si=Np-eOH7opkHWOw-1" target="_blank" class="btn-long">🎬 İZLE</a>
+            </div>
+            <div class="video-row">
+                <h3 class="video-title">Arabanızda Buz Gibi İçecekler! | SoğutUSB (Mini Buzdolabı)</h3>
+                <a href="https://youtu.be/--4EDACt2IE?si=YJrEROs4lkmX5eG0" target="_blank" class="btn-long">🎬 İZLE</a>
+            </div>
+            <div class="video-row">
+                <h3 class="video-title">Arduino ile Akıllı Sulama Sistemi: Bitkileriniz Susuz Kalmasın</h3>
+                <a href="https://youtu.be/REIkb7UeZow?si=CRQVG7gks9gHydj6" target="_blank" class="btn-long">🎬 İZLE</a>
+            </div>
+        </div>
+
+      <div id="shorts-videos" class="tab-content">
+    <h2 class="section-title" style="border-left-color: var(--neon-red);">HIZLI PROTOKOL VERİLERİ (SHORTS)</h2>
+    
+    <!-- TÜM KARTLARINIZI İÇİNE ALAN TEK GRİD -->
+    <div class="shorts-grid">
+
+        <!-- 1. Küçük Kart -->
+        <div class="shorts-card">
+            <div class="shorts-card-title">Akıllı Eviniz Aslında APTAL MI? 🤯 (ASTRION AI OS)</div>
+            <a href="https://youtube.com/shorts/4BMMZCYmpnI?si=KSbYI5hQkxG5m9Dw" target="_blank" class="btn-shorts">📱 SHORTS İZLE</a>
+        </div>
+
+        <!-- 2. Küçük Kart -->
+        <div class="shorts-card">
+            <div class="shorts-card-title">Yapay Zekâlı Ayna Yaptım! (Astrion Mirror) 🚀</div>
+            <a href="https://youtube.com/shorts/VVyBH5rlvYo?si=OxFq6nLdQpe3WGGv" target="_blank" class="btn-shorts">📱 SHORTS İZLE</a>
+        </div>
+
+        <!-- 3. Küçük Kart -->
+        <div class="shorts-card">
+            <div class="shorts-card-title">1 Damla Antimadde = KIYAMET? 🌌</div>
+            <a href="https://youtube.com/shorts/evOMLeGHJgU?si=Qq3AnAfO-2dCqM70" target="_blank" class="btn-shorts">📱 SHORTS İZLE</a>
+        </div>
+
+        <!-- 4. Küçük Kart -->
+        <div class="shorts-card">
+            <div class="shorts-card-title">Uzayı Bükmek Mümkün Mü? (Warp Sürücüsü)</div>
+            <a href="https://youtube.com/shorts/azFMzhNKhag?si=UQKEHa0_NwYeBXFm" target="_blank" class="btn-shorts">📱 SHORTS İZLE</a>
+        </div>
+
+        <!-- Diğer Kartlar -->
+        <div class="shorts-card">
+            <div class="shorts-card-title">Odama Uzay Görev Kontrol Merkezi Kurdum! 🌌💻</div>
+            <a href="https://youtube.com/shorts/Hbd-B98lBrs?si=OsZjZKWuAeHAf4KC" target="_blank" class="btn-shorts">📱 SHORTS İZLE</a>
+        </div>
+
+        <div class="shorts-card">
+            <div class="shorts-card-title">Gerçek Hayatta Demir Adam Masası Yaptım! 🤖💥</div>
+            <a href="https://youtube.com/shorts/FL_FrO4Zg8k?si=Bby2bcAa-UE1AQEP" target="_blank" class="btn-shorts">📱 SHORTS İZLE</a>
+        </div>
+
+        <div class="shorts-card">
+            <div class="shorts-card-title">Mars'ta Tarım Yapsaydık? ARES-1 Otonom Biyosfer Simülatörü! 🚀</div>
+            <a href="https://youtube.com/shorts/vQwjr1YNzkI?si=uofkkSpN9gSTQTKj" target="_blank" class="btn-shorts"> 📱 SHORTS İZLE</a>
+        </div>
+
+        <div class="shorts-card">
+            <div class="shorts-card-title">Kod Yazdım, Beni Telefonla Aradı! 🚨 (NATURE-GUARD v1)</div>
+            <a href="https://youtube.com/shorts/CixCy5PbrYg?si=V5XM8mOEktf0X7YA" target="_blank" class="btn-shorts">📱 SHORTS İZLE</a>
+        </div>
+
+        <div class="shorts-card">
+            <div class="shorts-card-title">Bu Sistem Dikkatini %100 Artırıyor 🔥</div>
+            <a href="https://youtube.com/shorts/cWqk5jO5K8o?si=17XIc960UvYm57GS" target="_blank" class="btn-shorts">📱 SHORTS İZLE</a>
+        </div>
+
+        <div class="shorts-card">
+            <div class="shorts-card-title">Laboratuvardan Kaçtı! Yeni Siber Robot Q-01 ⚡</div>
+            <a href="https://youtube.com/shorts/EHMqD4ONTYA?si=gy1EKrh-obweSP4O" target="_blank" class="btn-shorts">📱 SHORTS İZLE</a>
+        </div>
+
+        <div class="shorts-card">
+            <div class="shorts-card-title">Astronot Tarzı Akıllı Sera Yaptık! (ESP32 & Arduino) 🚀</div>
+            <a href="https://youtube.com/shorts/tMc0gSADD6o?si=vHqofdqRF9gV6Ama" target="_blank" class="btn-shorts">📱 SHORTS İZLE</a>
+        </div>
+
+        <div class="shorts-card">
+            <div class="shorts-card-title">ESP32 ile Bulaşık Makinesini Akıllandırdım! 🤖 (Telefona Alarm Atıyor)</div>
+            <a href="https://youtube.com/shorts/UieM626-zrE?si=7MF7-3Z0a74IgcAj" target="_blank" class="btn-shorts">📱 SHORTS İZLE</a>
+        </div>
+
+        <div class="shorts-card">
+            <div class="shorts-card-title">Odamın kapısını siberpunk kilitle hackledim! 🔐 Kapı nasıl açıldı?</div>
+            <a href="https://youtube.com/shorts/EBTl2M8YjnQ?si=bKwM6GTcih7B3Gcd" target="_blank" class="btn-shorts">📱 SHORTS İZLE</a>
+        </div>
+
+        <div class="shorts-card">
+            <div class="shorts-card-title">📱🏎️ Telefonla Uzaktan Kontrollü RC Araba Yaptık !!!🔥 #GeleceğinTeknolojisi</div>
+            <a href="https://youtube.com/shorts/eeRumlCP1rI?si=Ii_G0xVXngLEw5vx" target="_blank" class="btn-shorts">📱 SHORTS İZLE</a>
+        </div>
+
+        <div class="shorts-card">
+            <div class="shorts-card-title">🚗 Bu Eski Araba Bir Anda "Akıllı Sisteme" Dönüştü 😳</div>
+            <a href="https://youtube.com/shorts/pFebuwBIEAk?si=EyNQV4qDeXbEZhXj" target="_blank" class="btn-shorts">📱 SHORTS İZLE</a>
+        </div>
+
+        <div class="shorts-card">
+            <div class="shorts-card-title">Arduino ile LED Yakma ve Söndürme (En Basit Proje)</div>
+            <a href="https://youtube.com/shorts/i7KM23vVnMg?si=C5i_1CtAHjbu8BJs" target="_blank" class="btn-shorts">📱 SHORTS İZLE</a>
+        </div>
+
+    </div> <!-- shorts-grid sonu -->
+</div> <!-- tab-content sonu -->
+
+    </div>
+
+    <script>
+        function openTab(tabId) {
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+    </script>
+</body>
+</html>
